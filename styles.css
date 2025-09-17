@@ -40,6 +40,13 @@ body {
   gap: 2rem;
 }
 
+#canvas {
+  z-index: -39;
+  position: absolute;
+  display: none;
+  pointer-events: none;
+}
+
 button {
   padding: 1rem 3rem;
   font-size: 1.5rem;
@@ -52,27 +59,27 @@ button {
   letter-spacing: 0.1em;
 }
 
-.yes {
+#yes {
   background: linear-gradient(45deg, #00ff87, #0cf, #ff0);
   color: #111;
   box-shadow: 0 0 20px rgba(0,255,135,0.8),
               0 0 40px rgba(0,255,255,0.6);
 }
 
-.yes:hover {
+#yes:hover {
   transform: scale(1.1);
   box-shadow: 0 0 30px rgba(255,255,0,0.9),
               0 0 60px rgba(0,255,255,0.8);
 }
 
-.no {
+#no {
   background: linear-gradient(45deg, #ff0057, #ff7b00, #f0f);
   color: #111;
   box-shadow: 0 0 20px rgba(255,0,87,0.8),
               0 0 40px rgba(255,123,0,0.6);
 }
 
-.no:hover {
+#no:hover {
   transform: scale(1.1);
   box-shadow: 0 0 30px rgba(255,0,255,0.9),
               0 0 60px rgba(255,123,0,0.8);

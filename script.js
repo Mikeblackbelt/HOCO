@@ -1,58 +1,90 @@
-const canvas = document.getElementById('particleCanvas');
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let particles = [];
+const particleCount = 30;
 
-const particles = [];
-const particleCount = 100;
+canvas.style.position = 'absolute';
+canvas.style.display = 'none';
+canvas.style.pointerEvents = 'none'; // so clicks still work on buttons
 
 class Particle {
   constructor(x, y, dx, dy, size, color) {
     this.x = x;
     this.y = y;
-    this.dx = dx; // Horizontal velocity
-    this.dy = dy; // Vertical velocity
+    this.dx = dx;
+    this.dy = dy;
     this.size = size;
     this.color = color;
+    this.alpha = 1; // start visible
   }
 
   draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
     ctx.closePath();
+    ctx.restore();
   }
 
   update() {
-    if (this.x + this.size > canvas.width || this.x - this.size < 0) this.dx *= -1;
-    if (this.y + this.size > canvas.height || this.y - this.size < 0) this.dy *= -1;
-
     this.x += this.dx;
     this.y += this.dy;
-
+    this.alpha -= 0.02; // fade out faster
     this.draw();
   }
 }
 
-function initParticles() {
+function initParticles(x, y) {
+  particles = []; // reset completely
   for (let i = 0; i < particleCount; i++) {
-    const size = Math.random() * 5 + 1;
-    const x = Math.random() * (canvas.width - size * 2) + size;
-    const y = Math.random() * (canvas.height - size * 2) + size;
-    const dx = (Math.random() - 0.5) * 2;
-    const dy = (Math.random() - 0.5) * 2;
-    const color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`;
+    const size = Math.random() * 5 + 2;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 3 + 1;
+    const dx = Math.cos(angle) * speed;
+    const dy = Math.sin(angle) * speed;
+    const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
     particles.push(new Particle(x, y, dx, dy, size, color));
   }
 }
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(particle => particle.update());
-  requestAnimationFrame(animate);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.update();
+    if (p.alpha <= 0) {
+      particles.splice(i, 1); // remove faded particles
+    }
+  }
+
+  if (particles.length > 0) {
+    requestAnimationFrame(animate);
+  } else {
+    canvas.style.display = 'none'; // hide once all particles gone
+  }
 }
 
-initParticles();
-animate();
+function getposition(element) {
+  const rect = element.getBoundingClientRect();
+  return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+}
+
+const yes = document.getElementById('yes');
+
+yes.addEventListener('click', () => {
+  const yesPosition = getposition(yes);
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.left = 0;
+  canvas.style.top = 0;
+  canvas.style.display = 'block';
+
+  initParticles(yesPosition.x, yesPosition.y);
+  animate();
+});
