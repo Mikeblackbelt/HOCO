@@ -2,7 +2,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let particles = [];
-const particleCount = 50;
+const particleCount = 100;
 
 canvas.style.position = 'absolute';
 canvas.style.display = 'none';
