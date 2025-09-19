@@ -2,11 +2,12 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let particles = [];
-const particleCount = 75;
-
+var particleCount = 75;
+var added = 0
 canvas.style.position = 'absolute';
 canvas.style.display = 'none';
-canvas.style.pointerEvents = 'none'; // clicks still pass through
+canvas.style.pointerEvents = 'none'; 
+
 
 class Particle {
   constructor(x, y, dx, dy, size, color) {
@@ -17,14 +18,13 @@ class Particle {
     this.size = size;
     this.color = color;
     this.alpha = 1; 
-    this.rotation = Math.random() * Math.PI * 2; // give each particle its own rotation
+    this.rotation = Math.random() * Math.PI * 2; 
   }
 
   draw() {
     ctx.save();
     ctx.globalAlpha = this.alpha;
 
-    // move canvas origin to the particle center
     ctx.translate(this.x + this.size / 2, this.y + 0.25 * this.size);
 
     ctx.rotate(this.rotation);
@@ -38,8 +38,12 @@ class Particle {
 
   update() {
     this.x += this.dx;
+    this.dx *= 0.992;
     this.y += this.dy;
-    this.alpha -= 0.0005; // fade
+    this.dy *= 0.992;
+    this.size *= 0.995;
+    this.alpha -= 0.005;
+    this.rotation += 0.005;
     this.draw();
   }
 }
@@ -47,9 +51,9 @@ class Particle {
 function initParticles(x, y) {
   particles = []; 
   for (let i = 0; i < particleCount; i++) {
-    const size = Math.random() * 12 + 8;
+    var size = Math.random() * 12 + 8;
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 3 + 1;
+    const speed = Math.random() * 2 + 1.5;
     const dx = Math.cos(angle) * speed;
     const dy = Math.sin(angle) * speed;
     const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
@@ -62,8 +66,9 @@ function animate() {
 
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
+    
     p.update();
-    if (p.alpha <= 0) {
+    if (p.alpha <= 0 || p.size < 1) {
       particles.splice(i, 1); 
     }
   }
@@ -81,10 +86,13 @@ function getposition(element) {
 }
 
 const yes = document.getElementById('yes');
+canvas.style.zIndex = 1000;
+yes.style.zIndex = 1001;
 
 yes.addEventListener('click', () => {
   const yesPosition = getposition(yes);
-
+  particleCount += 10 - added;
+  added = Math.max(added - 2, 10)
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   canvas.style.left = 0;
