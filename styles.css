@@ -13,7 +13,6 @@ body {
   animation: gradientShift 20s ease infinite;
 }
 
-/* Animate the background position to simulate smooth movement */
 @keyframes gradientShift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
